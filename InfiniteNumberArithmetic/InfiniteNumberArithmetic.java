@@ -1,4 +1,4 @@
-// package InfiniteNumberArithmetic;
+package InfiniteNumberArithmetic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,6 +199,81 @@ public class InfiniteNumberArithmetic {
 
         return result;
     }
+    
+    
+    public class DivisionResult {
+        private List<Integer> quotient;
+        private List<Integer> remainder;
+
+        public DivisionResult(List<Integer> quotient, List<Integer> remainder) {
+            this.quotient = quotient;
+            this.remainder = remainder;
+        }
+
+        public String getQuotientAsString() {
+            StringBuilder quotientString = new StringBuilder();
+            for (int digit : quotient) {
+                quotientString.append(digit);
+            }
+            return quotientString.toString();
+        }
+
+        public String getRemainderAsString() {
+            StringBuilder remainderString = new StringBuilder();
+            for (int digit : remainder) {
+                remainderString.append(digit);
+            }
+            return remainderString.toString();
+        }
+    }
+
+    public DivisionResult division(InfiniteNumberArithmetic divisor) {
+        // Check if divisor is zero
+        if (divisor.internalList.size() == 1 && divisor.internalList.get(0) == 0) {
+            throw new IllegalArgumentException("Division by zero is not allowed.");
+        }
+
+        List<Integer> quotient = new ArrayList<>();
+        List<Integer> remainder = new ArrayList<>(internalList); // Copy of dividend
+
+        while (isGreaterThanOrEqualTo(remainder, divisor.internalList)) {
+            remainder = subtractNumbers(remainder, divisor.internalList);
+            incrementQuotient(quotient);
+        }
+
+        return new DivisionResult(quotient, remainder);
+    }
+
+    private boolean isGreaterThanOrEqualTo(List<Integer> arr1, List<Integer> arr2) {
+        // Check if arr1 is greater than or equal to arr2
+        if (arr1.size() > arr2.size()) {
+            return true;
+        } else if (arr1.size() < arr2.size()) {
+            return false;
+        } else {
+            for (int i = 0; i < arr1.size(); i++) {
+                if (arr1.get(i) > arr2.get(i)) {
+                    return true;
+                } else if (arr1.get(i) < arr2.get(i)) {
+                    return false;
+                }
+            }
+            return true; // Both numbers are equal
+        }
+    }
+
+    private void incrementQuotient(List<Integer> quotient) {
+        int carry = 1;
+        for (int i = quotient.size() - 1; i >= 0; i--) {
+            int sum = quotient.get(i) + carry;
+            quotient.set(i, sum % 10);
+            carry = sum / 10;
+        }
+        if (carry > 0) {
+            quotient.add(0, carry);
+        }
+    }
+
 
     public static void main(String[] args) {
         // Test addition
@@ -221,7 +296,15 @@ public class InfiniteNumberArithmetic {
       InfiniteNumberArithmetic num4 = new InfiniteNumberArithmetic(1000);
       result = num3.subtraction(num4);
       System.out.println("Subtraction: " + result.getNumberAsString());
-    }
+      
+      
+   // Test division
+      InfiniteNumberArithmetic dividend = new InfiniteNumberArithmetic(1000);
+      InfiniteNumberArithmetic divisor = new InfiniteNumberArithmetic(15);
+      DivisionResult divisionResult = dividend.division(divisor);
+      System.out.println("Division Quotient: " + divisionResult.getQuotientAsString());
+      System.out.println("Division Remainder: " + divisionResult.getRemainderAsString());
+      }
 }
 
 
